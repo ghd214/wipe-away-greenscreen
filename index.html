@@ -1,27 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Hello!</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css">
-    
-    <!-- import the webpage's javascript file -->
-    <script src="/script.js" defer></script>
-  </head>  
-  <body>
-    <h1>Hi there!</h1>
-    
-    <p>
-      I'm your cool new webpage. Made with <a href="https://glitch.com">Glitch</a>!
-    </p>
+<head>
+  <title>👋 Wipe Away Greenscreen</title>
+  <link rel="stylesheet" href="🎨.css">
+</head>
+<body>
+  <!-- UI -->
+  <div id="ui">
+    <button onclick="startWebcam()">Start Webcam</button>
+  </div>
 
-    <!-- include the Glitch button to show what the webpage is about and
-          to make it easier for folks to view source and remix -->
-    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
-    <script src="https://button.glitch.me/button.js"></script>
-  </body>
-</html>
+  <!-- Canvases -->
+  <div id="canvases">
+    <video id="webcam" playsinline></video>
+    <canvas id="posenet"></canvas>
+    <canvas id="posenet-mask"></canvas>
+    <canvas id="bodypix"></canvas>
+    <canvas id="alternate-reality"></canvas>
+  </div>
+  
+  <!-- App -->
+  <script>
+    // We'll track states here
+    app = {
+      // The APIs for specific models
+      api: {
+        posenet: null,
+        bodypix: null
+      },
+
+      // Pose data for specific models
+      pose: {
+        posenet: null,
+        bodypix: null
+      },
+
+      // Canvas contexts
+      ctx: {
+        posenetMask: document.getElementById('posenet-mask').getContext('2d'),
+        posenet: document.getElementById('posenet').getContext('2d'),
+        bodypix: document.getElementById('bodypix').getContext('2d'),
+        alt: document.getElementById('alternate-reality').getContext('2d')
+      },
+      
+      // Set these to your liking
+      config: {
+        // @see https://github.com/tensorflow/tfjs-models/tree/master/posenet#inputs-1
+        posenet: {
+          // A to scale image by, between 0.2 and 1.0
+          // lower = faster but less accurate
+          imageScaleFactor: 0.5,
+          // Must be 32, 16, 8
+          // lower = faster but less accurate
+          outputStride: 16,
+          // How confident the model needs to be before a keypoint is shown (between 0-1)
+          minPartConfidence: 0.5
+        },
+
+        bodypix: {
+          // Must be 32, 16, 8
+          // lower = faster but less accurate
+          outputStride: 16,
+          // How confident a pixel has to be before it's considered part of your person
+          segmentationThreshold: .5
+        },
+        
+        video: {
+          // The internal video size
+          // Smaller means faster inference but blurrier image
+          width: 600,
+          // This will just keep your dimensions consistent.
+          // If width is 600 then this keeps internal height at 500
+          heightRatio: .833333333
+        }
+      },
+      
+      // Element cache
+      $: {
+        video: {
+          webcam: document.getElementById('webcam'),
+          posenetMask: document.getElementById('posenet-mask'),
+          posenet: document.getElementById('posenet'),
+          bodypix: document.getElementById('bodypix'),
+          alt: document.getElementById('alternate-reality')
+        }
+      },
+
+      // The video stream
+      stream: null
+    }
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix"></script>
+  <script src="🛠.js"></script>
+  <script src="🧙.js"></script>
+</body>
